@@ -1,0 +1,25 @@
+mixin head(title, description, image, url, dataType)
+	- if(title === "") var pageTitle = process.env.WEBSITE_NAME;
+	- else var pageTitle = process.env.WEBSITE_NAME + ' | ' + title;
+
+	title= pageTitle
+	if description
+		meta(name="description" content=description)
+
+	// Facebook
+	meta(property="og:title" content=pageTitle)
+	if description
+		meta(property="og:description" content=description)
+	meta(property="og:type" content=dataType)
+	meta(property="og:url" content=url)
+	if image
+		meta(property="og:image" content=image)
+
+	// Twitter
+	meta(name="twitter:title" content=pageTitle)
+	if description
+		meta(name="twitter:description" content=description)
+	meta(name="twitter:card" content="summary")
+	meta(name="twitter:url" content=url)
+	if image
+		meta(name="twitter:image" content=image)

@@ -1,0 +1,101 @@
+extends ../layouts/default
+
+block variables
+	- var contactPage = true;
+
+block head
+	+head(pageTitle, data.contact.description, process.env.DOMAIN_NAME + mainImagePath, process.env.DOMAIN_NAME+"/"+section, "website")
+
+block content
+	section.contact
+		#map
+		h1 Nous contacter
+		.contact-wrapper
+			.contact-card
+				include ../../public/images/logo.svg
+				p.address
+					if data.contact.address.street1
+						span= data.contact.address.street1
+					if data.contact.address.postcode || data.contact.address.suburb
+						span
+							if data.contact.address.postcode
+								| #{data.contact.address.postcode} 
+							if data.contact.address.suburb
+								| #{data.contact.address.suburb}
+					if data.contact.address.country
+						span= data.contact.address.country
+				p
+					if data.contact.phone
+						span T / #{data.contact.phone} 
+					if data.contact.mobilePhone
+						span T / #{data.contact.mobilePhone} 
+					if data.contact.email
+						a(href='mailto:'+data.contact.email)= data.contact.email
+				.socials
+					if data.contact.socials.facebook
+						a(href=data.contact.socials.facebook target="_blank") facebook
+					if data.contact.socials.twitter
+						a(href=data.contact.socials.twitter target="_blank") twitter
+					if data.contact.socials.linkedin
+						a(href=data.contact.socials.linkedin target="_blank") linkedin
+					form.custom-form.newsletter(method='post' action='/newsletter' onsubmit='return submitNewsletter(this);' autocomplete='on')
+						h3 newsletter
+						input.action(type='hidden', name='action', value='newsletter')
+						.field
+							label(for='email-newsletter') Email
+							input#email-newsletter(type='email', name='email', placeholder='Entrez votre email ici')
+						button(type='submit')
+							span.button-text Envoyer
+							span.loader
+						.result-box
+			form.contact-form.custom-form(method='post' action='contact' onsubmit='return submitEnquiry(this);' autocomplete='on')
+				input.action(type='hidden', name='action', value='contact')
+				.field
+					label(for='name') Nom
+					input#name(type='text', name='name', placeholder='Nom')
+				.field.email
+					label(for='email') Email
+					input#email(type='email', name='email', placeholder='Email')
+				.field
+					label(for='subject') Sujet
+					input#subject(type='text', name='subject', placeholder='Sujet')
+				.field
+					label(for='message') Message
+					textarea#message(name='message', placeholder='Laissez-nous un message…')
+				button(type='submit')
+					span.button-text Envoyer
+					span.loader
+				.result-box
+					if responses.success
+						p.result-message.success Votre message a été envoyé, merci.
+					if responses.invalidEmail
+						p.result-message.error Erreur&nbsp;: Veuillez entrer une adresse email valide.
+					if responses.invalidPhone
+						p.result-message.error Erreur&nbsp;: Veuillez entrer un numéro de téléphone valide.
+					if responses.missingFields
+						p.result-message.error Erreur&nbsp;: Des champs requis n'ont pas été remplis
+					if responses.invalidCharacters
+						p.result-message.error Erreur&nbsp;: L’email contient des caractères invalides.
+					if responses.failure
+						p.result-message.failure Erreur&nbsp;: Votre message n’a pas pu être envoyé, veuillez réessayer plus tard.
+
+block js
+	// GOOGLE MAPS
+	script
+		| mapStyles = [{"elementType":"geometry","stylers":[{"color":"#f5f5f5"}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#f5f5f5"}]},{"featureType":"administrative.land_parcel","elementType":"labels.text.fill","stylers":[{"color":"#bdbdbd"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#eeeeee"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#e5e5e5"}]},{"featureType":"poi.park","elementType":"labels.text.fill","stylers":[{"color":"#9e9e9e"}]},{"featureType":"road","elementType":"geometry","stylers":[{"color":"#ffffff"}]},{"featureType":"road.arterial","elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#dadada"}]},{"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},{"featureType":"road.local","elementType":"labels.text.fill","stylers":[{"color":"#9e9e9e"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"color":"#e5e5e5"}]},{"featureType":"transit.station","elementType":"geometry","stylers":[{"color":"#eeeeee"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#c9c9c9"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#9e9e9e"}]}];
+		| function initMap() {
+		| 	var uluru = {lat: 47.226, lng: -1.556};
+		| 	var map = new google.maps.Map(document.getElementById('map'), {
+		| 		zoom: 16,
+		|		styles: mapStyles,
+		|		streetViewControl: false,
+		|		mapTypeControl: false,
+		|		fullscreenControl: false,
+		| 		center: uluru
+		| 	});
+		| 	var marker = new google.maps.Marker({
+		| 		position: uluru,
+		| 		map: map
+		| 	});
+		| }
+	script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCX80NEyVT-3xGIrv1GEZkUrtHdi-giF3I&callback=initMap")

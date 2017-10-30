@@ -1,0 +1,77 @@
+// Floats
+
+.clearfix() {
+    &:before,
+    &:after {
+        content: " "; // 1
+        display: table; // 2
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+// Multiple lines ellipsis
+
+.multiline-ellipsis(@lines, @font-size, @line-height) {
+    // It takes a line-height and a height to make this work
+  display: block; /* Fallback for non-webkit */
+  display: -webkit-box;
+  height: @font-size*@line-height*@lines; /* Fallback for non-webkit */
+  margin: 0 auto;
+  font-size: @font-size;
+  line-height: @line-height;
+  -webkit-line-clamp: @lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Kill highlight
+
+.no-highlight() {
+    &::selection {
+        background: transparent;
+    }
+
+    &::-moz-selection {
+        background: transparent;
+    }
+}
+
+
+// Hide with accessibility support
+
+.assistive-hide() {
+    position: absolute;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: polygon(0px 0px, 0px 0px,0px 0px, 0px 0px);
+}
+
+.assistive-show() {
+    position: static;
+    clip: auto;
+    clip-path: none;
+}
+
+.hidden {
+    .assistive-hide();
+}
+
+
+// Calculate width of a child a fluid parent container
+
+@width: 0;
+
+.calculate-width(@child-column-nb, @child-gutter-nb, @parent-column-nb, @parent-gutter-nb) when (@parent-column-nb = false) and (@parent-gutter-nb = false) {
+    @width: @column * @child-column-nb + @gutter * @child-gutter-nb;
+}
+
+.calculate-width(@child-column-nb, @child-gutter-nb, @parent-column-nb, @parent-gutter-nb) when (default()) {
+    @parent-size: @parent-column-nb * @column + @parent-gutter-nb * @gutter;
+    
+    @proportional-column: @column * 100 / @parent-size;
+    @proportional-gutter: @gutter * 100 / @parent-size;
+
+    @width: @proportional-column * @child-column-nb + @proportional-gutter * @child-gutter-nb;
+}

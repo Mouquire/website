@@ -1,0 +1,59 @@
+doctype html
+html
+
+	//- HTML HEADER
+	head
+		meta(charset="utf-8")
+		meta(name="viewport", content="width=device-width, initial-scale=1.0")
+		meta(name="robots" content="NOODP")
+		meta(http-equiv="X-UA-Compatible" content="IE=edge")
+
+		title= title || 'Collective\'s website'
+		link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
+
+		//- Customise the stylesheet for your site by editing /public/styles/site.less
+		//- All .less files will be automatically compiled and minified in production.
+		link(href="/styles/site.css" rel="stylesheet")
+
+		//- JAVASCRIPT
+		script(src="/js/script.min.js" defer)
+
+		//- Include template-specific stylesheets by extending the css block
+		block css
+
+		//- Add any other template-specific HEAD tags by extending the head block
+		block head
+
+	//- HTML BODY
+	body
+		if process.env.NODE_ENV === 'development'
+			include ../mixins/grid
+
+		//- HEADER
+		header.nav
+			//- Customise your site's navigation by changing the navLinks Array in ./routes/middleware.js
+			//- ... or completely change this header to suit your design.
+
+			nav
+				a(href='/') Mouquire
+				ul
+					each link in navLinks
+						li(class=(section == link.key ? 'active' : null)): a(href=link.href)= link.label
+				ul
+					if user
+						if user.canAccessKeystone
+							li: a(href='/keystone') Open Keystone
+						li: a(href='/keystone/signout') Sign Out
+					else
+						li: a(href='/keystone/signin') Sign In
+
+		//- BODY
+		main
+			block content
+
+
+		//- SCRIPT
+		block js
+
+		//- STRUCTURED DATA
+		block jsonld
